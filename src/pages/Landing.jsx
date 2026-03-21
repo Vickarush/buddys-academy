@@ -58,16 +58,12 @@ export default function Landing() {
             This is where approved Buddys learn the standards, expectations, and reporting process required to represent TaskBuddys on the ground in Nigeria.
           </motion.p>
           <motion.div {...fadeUp(0.5)} className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link to="/login">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-3 rounded-xl shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5">
-                Start Training <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
-            <Link to="/login">
-              <Button size="lg" variant="outline" className="border-2 border-foreground/20 text-foreground font-semibold px-8 py-3 rounded-xl hover:border-primary hover:text-primary transition-all">
-                Log In
-              </Button>
-            </Link>
+            <Button onClick={goToLogin} size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-3 rounded-xl shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5">
+              Start Training <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+            <Button onClick={goToLogin} size="lg" variant="outline" className="border-2 border-foreground/20 text-foreground font-semibold px-8 py-3 rounded-xl hover:border-primary hover:text-primary transition-all">
+              Log In
+            </Button>
           </motion.div>
         </div>
       </section>
