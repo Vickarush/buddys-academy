@@ -138,11 +138,9 @@ export default function Landing() {
             ))}
           </motion.div>
           <motion.div {...fadeUp(0.4)}>
-            <Link to="/login">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold px-10 py-3 rounded-xl shadow-lg shadow-primary/20">
-                Begin Your Training
-              </Button>
-            </Link>
+            <Button onClick={goToLogin} size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold px-10 py-3 rounded-xl shadow-lg shadow-primary/20">
+              Begin Your Training
+            </Button>
           </motion.div>
         </div>
       </section>
