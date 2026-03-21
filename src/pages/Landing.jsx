@@ -34,11 +34,9 @@ export default function Landing() {
             </div>
             <span className="font-playfair font-bold text-lg text-foreground">Buddys Academy</span>
           </div>
-          <Link to="/login">
-            <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-white transition-all">
-              Log In
-            </Button>
-          </Link>
+          <Button onClick={goToLogin} variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-white transition-all">
+            Log In
+          </Button>
         </div>
       </nav>
 
