@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Shield, Camera, FileText, AlertTriangle, Lock, Users, Award, ChevronRight, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { base44 } from '@/api/base44Client';
+
+const goToLogin = () => base44.auth.redirectToLogin('/dashboard');
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
