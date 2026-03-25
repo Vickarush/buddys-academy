@@ -40,8 +40,19 @@ export default function Certification() {
     load();
   }, []);
 
-  const completedModules = progress.filter(p => p.module_completed).length;
-  const allComplete = completedModules === modules.length && modules.length > 0;
+  // Modules 1-8 (non-final) must all have quiz_passed = true
+  const trainingModules = modules.filter(m => m.order !== 9);
+  const finalAssessmentModule = modules.find(m => m.order === 9);
+  const allTrainingPassed = trainingModules.length > 0 && trainingModules.every(m => {
+    const p = progress.find(p => p.module_id === m.id);
+    return p?.quiz_passed === true;
+  });
+  const finalAssessmentPassed = (() => {
+    if (!finalAssessmentModule) return false;
+    const p = progress.find(p => p.module_id === finalAssessmentModule.id);
+    return p?.quiz_passed === true;
+  })();
+  const allComplete = allTrainingPassed && finalAssessmentPassed;
   const allAgreementsChecked = agreementChecked.length === agreementItems.length;
 
   const handleAgreementToggle = (i) => {
@@ -171,7 +182,12 @@ export default function Certification() {
           <Button
             onClick={handleSubmitCertification}
             disabled={!allComplete || !allAgreementsChecked || submitting}
-            className="w-full mt-5 bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-xl disabled:opacity-50"
+            className="w-full mt-5 py-3 rounded-xl font-bold transition-all"
+            style={
+              allComplete && allAgreementsChecked
+                ? { backgroundColor: '#c8952a', color: '#000', cursor: 'pointer', fontWeight: 700 }
+                : {}
+            }
           >
             {submitting ? 'Submitting...' : 'Submit Certification Request'}
           </Button>

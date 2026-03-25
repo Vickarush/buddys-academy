@@ -5,6 +5,9 @@ import { ChevronLeft, ChevronRight, CheckCircle, X, Check, Play, List, FileText,
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import QuizSection from '@/components/training/QuizSection';
+import FinalAssessment from '@/components/training/FinalAssessment';
+
+const FINAL_ASSESSMENT_ORDER = 9;
 
 export default function ModuleViewer() {
   const { moduleId } = useParams();
@@ -101,6 +104,17 @@ export default function ModuleViewer() {
 
   if (!module) {
     return <div className="p-8 text-center text-muted-foreground">Module not found.</div>;
+  }
+
+  // Final Assessment (Module 9) gets its own dedicated flow
+  if (module.order === FINAL_ASSESSMENT_ORDER) {
+    return (
+      <FinalAssessment
+        module={module}
+        user={user}
+        onPassed={handleQuizPassed}
+      />
+    );
   }
 
   if (showQuiz) {
