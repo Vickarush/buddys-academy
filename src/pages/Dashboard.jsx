@@ -40,9 +40,10 @@ export default function Dashboard() {
     load();
   }, []);
 
-  const completedCount = progress.filter(p => p.module_completed).length;
+  const rawCompleted = progress.filter(p => p.module_completed).length;
   const totalModules = modules.length;
-  const percentage = totalModules > 0 ? Math.round((completedCount / totalModules) * 100) : 0;
+  const completedCount = Math.min(rawCompleted, totalModules);
+  const percentage = totalModules > 0 ? Math.min(100, Math.round((completedCount / totalModules) * 100)) : 0;
 
   const getModuleStatus = (mod) => {
     const p = progress.find(p => p.module_id === mod.id);

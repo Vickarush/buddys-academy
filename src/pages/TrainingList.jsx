@@ -61,8 +61,9 @@ export default function TrainingList() {
     );
   }
 
-  const completedCount = progress.filter(p => p.module_completed).length;
+  const rawCompleted = progress.filter(p => p.module_completed).length;
   const totalModules = modules.length;
+  const completedCount = Math.min(rawCompleted, totalModules);
 
   return (
     <div className="p-5 md:p-8 max-w-3xl mx-auto">
@@ -76,13 +77,13 @@ export default function TrainingList() {
       <motion.div {...fadeUp(0.1)} className="bg-card border border-border rounded-2xl p-5 mb-8">
         <div className="flex justify-between items-center mb-3">
           <span className="text-sm font-medium text-foreground">Overall Progress</span>
-          <span className="text-sm font-bold text-primary">{totalModules > 0 ? Math.round((completedCount / totalModules) * 100) : 0}%</span>
+          <span className="text-sm font-bold text-primary">{totalModules > 0 ? Math.min(100, Math.round((completedCount / totalModules) * 100)) : 0}%</span>
         </div>
         <div className="h-2.5 bg-secondary rounded-full overflow-hidden">
           <motion.div
             className="h-full bg-primary rounded-full"
             initial={{ width: 0 }}
-            animate={{ width: `${totalModules > 0 ? (completedCount / totalModules) * 100 : 0}%` }}
+            animate={{ width: `${totalModules > 0 ? Math.min(100, (completedCount / totalModules) * 100) : 0}%` }}
             transition={{ duration: 1, ease: 'easeOut' }}
           />
         </div>
@@ -143,9 +144,9 @@ export default function TrainingList() {
                         <h3 className="font-semibold text-foreground text-sm truncate">{mod.title}</h3>
                         <div className="flex items-center gap-3 mt-1">
                           <span className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Clock className="w-3 h-3" />{mod.estimated_minutes || 15} min
+                           <Clock className="w-3 h-3" />{mod.estimated_minutes || 15} min
                           </span>
-                          {mod.pass_mark && <span className="text-xs text-muted-foreground">Pass: {mod.pass_mark}%</span>}
+                          {mod.pass_mark && <span className="text-xs text-muted-foreground">· Pass: {mod.pass_mark}%</span>}
                         </div>
                       </div>
                       <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />

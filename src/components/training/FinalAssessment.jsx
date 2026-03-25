@@ -42,8 +42,9 @@ export default function FinalAssessment({ module, user, onPassed }) {
     } else {
       // Submit
       setSaving(true);
-      const correct = questions.filter((q, i) => answers[i] === q.correct_answer_index).length;
-      const scorePercent = Math.round((correct / questions.length) * 100);
+      const countedCorrect = questions.filter((q, i) => answers[i] === q.correct_answer_index).length;
+      const correct = Math.min(countedCorrect, TOTAL_QUESTIONS);
+      const scorePercent = Math.min(100, Math.round((correct / TOTAL_QUESTIONS) * 100));
       const didPass = correct >= PASS_SCORE;
       setScore(correct);
       setPassed(didPass);
@@ -251,7 +252,7 @@ export default function FinalAssessment({ module, user, onPassed }) {
               </div>
               <h2 className="font-playfair text-3xl font-bold text-background mb-2">Final Assessment Passed!</h2>
               <p className="text-background/60 text-sm mb-1">You scored <span className="text-primary font-bold">{score} out of {TOTAL_QUESTIONS}</span></p>
-              <p className="text-background/40 text-xs mb-8">Pass mark: 80% · Your score: {Math.round((score / TOTAL_QUESTIONS) * 100)}%</p>
+              <p className="text-background/40 text-xs mb-8">Pass mark: 80% · Your score: {Math.min(100, Math.round((score / TOTAL_QUESTIONS) * 100))}%</p>
               <Button
                 onClick={() => navigate('/certification')}
                 className="bg-primary hover:bg-primary/90 text-white font-bold px-8 py-3 rounded-xl gap-2"

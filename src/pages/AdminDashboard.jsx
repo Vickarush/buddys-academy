@@ -41,9 +41,11 @@ export default function AdminDashboard() {
     load();
   }, []);
 
+  const finalAssessmentModule = modules.find(m => m.order === 9);
+
   const getUserProgress = (email) => {
     const prog = allProgress.filter(p => p.module_id && p.module_completed && p.user_email === email);
-    return prog.length;
+    return Math.min(prog.length, modules.length);
   };
 
   const getUserCert = (email) => allCerts.find(c => c.user_email === email);
@@ -52,6 +54,22 @@ export default function AdminDashboard() {
     const results = allQuizResults.filter(r => r.user_email === email);
     if (!results.length) return null;
     return Math.round(results.reduce((s, r) => s + r.score, 0) / results.length);
+  };
+
+  const getFinalAssessmentStatus = (email) => {
+    if (!finalAssessmentModule) return null;
+    const prog = allProgress.find(p => p.user_email === email && p.module_id === finalAssessmentModule.id);
+    const attempts = allQuizResults.filter(r => r.user_email === email && r.module_id === finalAssessmentModule.id);
+    if (!attempts.length) return { status: 'not_taken', attempts: 0 };
+    const best = attempts.sort((a, b) => b.score - a.score)[0];
+    const correctOut15 = Math.min(15, Math.round((best.score / 100) * 15));
+    return {
+      status: prog?.quiz_passed ? 'passed' : 'failed',
+      score: correctOut15,
+      scorePercent: Math.min(100, best.score),
+      completedAt: prog?.completed_at,
+      attempts: attempts.length,
+    };
   };
 
   const handleCertify = async (userEmail) => {
@@ -139,7 +157,8 @@ export default function AdminDashboard() {
               const completed = getUserProgress(u.email);
               const cert = getUserCert(u.email);
               const avgScore = getUserAvgScore(u.email);
-              const pct = modules.length > 0 ? Math.round((completed / modules.length) * 100) : 0;
+              const pct = modules.length > 0 ? Math.min(100, Math.round((completed / modules.length) * 100)) : 0;
+              const fa = getFinalAssessmentStatus(u.email);
               return (
                 <motion.div key={u.id} {...fadeUp(0.05 * i)}>
                   <div className="bg-card border border-border rounded-2xl p-5 hover:border-primary/30 transition-all">
@@ -154,6 +173,17 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 flex-wrap">
+                        {/* Final Assessment badge */}
+                        {fa?.status === 'passed' && (
+                          <span className="inline-flex items-center gap-1 text-xs font-semibold bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                            <CheckCircle className="w-3 h-3" /> Final: {fa.score}/15
+                          </span>
+                        )}
+                        {fa?.status === 'failed' && (
+                          <span className="inline-flex items-center gap-1 text-xs font-semibold bg-red-50 text-red-600 px-3 py-1 rounded-full">
+                            <XCircle className="w-3 h-3" /> Final: {fa.score}/15
+                          </span>
+                        )}
                         {cert?.is_certified ? (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold bg-green-100 text-green-700 px-3 py-1 rounded-full">
                             <Award className="w-3 h-3" /> Certified
@@ -170,7 +200,16 @@ export default function AdminDashboard() {
                         )}
                       </div>
                     </div>
-                    <div className="mt-4">
+                    {/* Final Assessment detail row */}
+                    {fa && fa.status !== 'not_taken' && (
+                      <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground border-t border-border pt-3">
+                        <span className="font-medium text-foreground">Final Assessment:</span>
+                        <span>{fa.score} out of 15 ({fa.scorePercent}%)</span>
+                        {fa.attempts > 0 && <span>{fa.attempts} attempt{fa.attempts > 1 ? 's' : ''}</span>}
+                        {fa.completedAt && <span>{new Date(fa.completedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}
+                      </div>
+                    )}
+                    <div className="mt-3">
                       <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
                         <span>{completed}/{modules.length} modules</span>
                         <span>{pct}%{avgScore !== null ? ` · Avg: ${avgScore}%` : ''}</span>
