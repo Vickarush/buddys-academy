@@ -5,6 +5,7 @@ import { BookOpen, Award, ChevronRight, CheckCircle, Clock, Lock, Play, Trending
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import DownloadRecordButton from '@/components/dashboard/DownloadRecordButton';
+import TrainingAnalytics from '@/components/dashboard/TrainingAnalytics';
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 16 },
@@ -159,6 +160,9 @@ export default function Dashboard() {
           </div>
         ))}
       </motion.div>
+
+      {/* Analytics */}
+      <TrainingAnalytics modules={modules} progress={progress} quizResults={quizResults} />
 
       {/* Module List */}
       <motion.div {...fadeUp(0.2)}>
