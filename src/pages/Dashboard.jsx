@@ -6,6 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import DownloadRecordButton from '@/components/dashboard/DownloadRecordButton';
 import TrainingAnalytics from '@/components/dashboard/TrainingAnalytics';
+import CompleteProfileModal from '@/components/dashboard/CompleteProfileModal';
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 16 },
@@ -68,6 +69,8 @@ export default function Dashboard() {
     return s === 'available' || s === 'in_progress';
   });
 
+  const needsProfile = !loading && user && !user.full_name;
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -78,6 +81,9 @@ export default function Dashboard() {
 
   return (
     <div className="p-5 md:p-8 max-w-5xl mx-auto">
+      {needsProfile && (
+        <CompleteProfileModal onComplete={(fullName) => setUser(u => ({ ...u, full_name: fullName }))} />
+      )}
       {/* Header */}
       <motion.div {...fadeUp(0)} className="mb-8">
         <div className="flex items-start justify-between gap-4 flex-wrap">
