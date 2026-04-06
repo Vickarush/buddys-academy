@@ -149,38 +149,139 @@ export default function DownloadRecordButton({ user, modules, progress, quizResu
         y += 30;
       }
 
-      // ── Certificate section (if certified) ──
+      // ── Certificate page (if certified) — full landscape A4 ──
       if (certification?.is_certified) {
-        if (y > 200) { doc.addPage(); y = 20; }
+        doc.addPage('a4', 'landscape');
+        const CW = 297; // landscape width
+        const CH = 210; // landscape height
+        const cx = CW / 2;
 
-        // Gold certificate box
-        doc.setFillColor(...gold);
-        doc.roundedRect(margin, y, W - margin * 2, 60, 4, 4, 'F');
+        const cream = [254, 252, 245];
+        const goldD = [160, 110, 10];
+        const goldM = [200, 149, 42];
+        const goldL = [230, 185, 80];
+        const goldPale = [248, 236, 195];
 
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(18);
+        // Cream background
+        doc.setFillColor(...cream);
+        doc.rect(0, 0, CW, CH, 'F');
+
+        // Outer border — thick gold
+        doc.setDrawColor(...goldD);
+        doc.setLineWidth(3.5);
+        doc.rect(8, 8, CW - 16, CH - 16);
+
+        // Inner border — thin gold
+        doc.setDrawColor(...goldM);
+        doc.setLineWidth(1);
+        doc.rect(13, 13, CW - 26, CH - 26);
+
+        // Corner ornament squares
+        const corners = [[8,8],[CW-8,8],[8,CH-8],[CW-8,CH-8]];
+        corners.forEach(([cx2, cy2]) => {
+          doc.setFillColor(...goldM);
+          doc.rect(cx2 - 4, cy2 - 4, 8, 8, 'F');
+          doc.setFillColor(...cream);
+          doc.rect(cx2 - 2, cy2 - 2, 4, 4, 'F');
+        });
+
+        // Top decorative band
+        doc.setFillColor(...goldPale);
+        doc.rect(13, 13, CW - 26, 22, 'F');
+        doc.setFillColor(...goldD);
+        doc.rect(13, 34, CW - 26, 1, 'F');
+
+        // Academy name in band
         doc.setFont('helvetica', 'bold');
-        doc.text('Certificate of Completion', W / 2, y + 16, { align: 'center' });
+        doc.setFontSize(11);
+        doc.setTextColor(...goldD);
+        doc.text('BUDDYS ACADEMY', cx, 27, { align: 'center', charSpace: 4 });
 
+        // Decorative lines either side of title
+        doc.setDrawColor(...goldM);
+        doc.setLineWidth(0.5);
+        doc.line(30, 27, cx - 60, 27);
+        doc.line(cx + 60, 27, CW - 30, 27);
+
+        // Bottom decorative band
+        doc.setFillColor(...goldPale);
+        doc.rect(13, CH - 35, CW - 26, 22, 'F');
+        doc.setFillColor(...goldD);
+        doc.rect(13, CH - 35, CW - 26, 1, 'F');
+
+        // "CERTIFICATE OF ACHIEVEMENT" headline
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(26);
+        doc.setTextColor(...goldD);
+        doc.text('CERTIFICATE OF ACHIEVEMENT', cx, 68, { align: 'center', charSpace: 2 });
+
+        // Thin decorative rule under headline
+        doc.setDrawColor(...goldL);
+        doc.setLineWidth(0.8);
+        const ruleLen = 110;
+        doc.line(cx - ruleLen, 72, cx + ruleLen, 72);
+
+        // "This is to certify that"
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        doc.setTextColor(80, 70, 50);
+        doc.text('This is to proudly certify that', cx, 88, { align: 'center' });
+
+        // Recipient name — large & bold
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(32);
+        doc.setTextColor(...goldD);
+        doc.text(user?.full_name || '', cx, 110, { align: 'center' });
+
+        // Underline the name
+        const nameWidth = doc.getTextWidth(user?.full_name || '');
+        doc.setDrawColor(...goldM);
+        doc.setLineWidth(0.7);
+        doc.line(cx - nameWidth / 2, 113, cx + nameWidth / 2, 113);
+
+        // Body text
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(11);
+        doc.setTextColor(80, 70, 50);
+        doc.text('has successfully completed all modules of the', cx, 126, { align: 'center' });
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(13);
+        doc.setTextColor(...goldD);
+        doc.text('Buddys Academy Training Programme', cx, 136, { align: 'center' });
+
+        doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text('This certifies that', W / 2, y + 26, { align: 'center' });
+        doc.setTextColor(100, 90, 70);
+        doc.text('and is fully authorised to handle live TaskBuddys assignments.', cx, 146, { align: 'center' });
 
-        doc.setFontSize(15);
+        // Star / medal ornament row
+        const stars = ['★', '✦', '★'];
+        doc.setFontSize(14);
+        doc.setTextColor(...goldM);
+        stars.forEach((s, si) => doc.text(s, cx + (si - 1) * 14, 158, { align: 'center' }));
+
+        // Date & ID in bottom band
+        const certDate = certification.certified_at
+          ? new Date(certification.certified_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+          : new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
         doc.setFont('helvetica', 'bold');
-        doc.text(user?.full_name || '', W / 2, y + 36, { align: 'center' });
-
         doc.setFontSize(9);
-        doc.setFont('helvetica', 'normal');
-        doc.text('has successfully completed the Buddys Academy Training Programme', W / 2, y + 44, { align: 'center' });
-        doc.text('and is authorised to handle live TaskBuddys assignments.', W / 2, y + 50, { align: 'center' });
+        doc.setTextColor(...goldD);
+        doc.text(`Date Awarded: ${certDate}`, 30, CH - 20, { align: 'left' });
+        doc.text('Authorised by Buddys Academy', CW - 30, CH - 20, { align: 'right' });
 
-        if (certification.certified_at) {
-          const dateStr = new Date(certification.certified_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-          doc.setFontSize(8);
-          doc.text(`Certified on ${dateStr}`, W / 2, y + 57, { align: 'center' });
-        }
-        y += 68;
+        // Centre seal placeholder circle
+        doc.setDrawColor(...goldD);
+        doc.setLineWidth(1.2);
+        doc.circle(cx, CH - 21, 8);
+        doc.setFillColor(...goldPale);
+        doc.circle(cx, CH - 21, 7, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6);
+        doc.setTextColor(...goldD);
+        doc.text('BA', cx, CH - 19, { align: 'center' });
       }
 
       // ── Footer ──
