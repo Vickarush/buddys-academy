@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { BookOpen, Award, ChevronRight, CheckCircle, Clock, Lock, Play, TrendingUp } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
+import DownloadRecordButton from '@/components/dashboard/DownloadRecordButton';
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 16 },
@@ -16,6 +17,7 @@ export default function Dashboard() {
   const [modules, setModules] = useState([]);
   const [progress, setProgress] = useState([]);
   const [certification, setCertification] = useState(null);
+  const [quizResults, setQuizResults] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,14 +25,16 @@ export default function Dashboard() {
       try {
         const u = await base44.auth.me();
         setUser(u);
-        const [mods, prog, cert] = await Promise.all([
+        const [mods, prog, cert, results] = await Promise.all([
           base44.entities.TrainingModule.list('order', 50),
           base44.entities.TrainingProgress.filter({ user_email: u.email }),
           base44.entities.CertificationStatus.filter({ user_email: u.email }),
+          base44.entities.QuizResult.filter({ user_email: u.email }),
         ]);
         setModules(mods.filter(m => m.is_published));
         setProgress(prog);
         setCertification(cert[0] || null);
+        setQuizResults(results);
       } catch (e) {
         console.error(e);
       } finally {
@@ -75,16 +79,31 @@ export default function Dashboard() {
     <div className="p-5 md:p-8 max-w-5xl mx-auto">
       {/* Header */}
       <motion.div {...fadeUp(0)} className="mb-8">
-        <p className="text-sm text-muted-foreground mb-1">Welcome back,</p>
-        <h1 className="font-playfair text-3xl font-bold text-foreground">
-          {user?.full_name || 'Buddy'} 👋
-        </h1>
-        {certification?.is_certified && (
-          <div className="mt-3 inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary text-sm font-semibold px-4 py-1.5 rounded-full">
-            <Award className="w-4 h-4" />
-            Certified Buddy
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Welcome back,</p>
+            <h1 className="font-playfair text-3xl font-bold text-foreground">
+              {user?.full_name || 'Buddy'} 👋
+            </h1>
+            {certification?.is_certified && (
+              <div className="mt-3 inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary text-sm font-semibold px-4 py-1.5 rounded-full">
+                <Award className="w-4 h-4" />
+                Certified Buddy
+              </div>
+            )}
           </div>
-        )}
+          {completedCount > 0 && (
+            <div className="mt-1">
+              <DownloadRecordButton
+                user={user}
+                modules={modules}
+                progress={progress}
+                quizResults={quizResults}
+                certification={certification}
+              />
+            </div>
+          )}
+        </div>
       </motion.div>
 
       {/* Progress Card */}
