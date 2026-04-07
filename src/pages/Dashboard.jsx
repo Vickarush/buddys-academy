@@ -69,7 +69,7 @@ export default function Dashboard() {
     return s === 'available' || s === 'in_progress';
   });
 
-  const needsProfile = !loading && user && !user.full_name;
+  const needsProfile = !loading && user && !user.display_name;
 
   if (loading) {
     return (
@@ -82,7 +82,7 @@ export default function Dashboard() {
   return (
     <div className="p-5 md:p-8 max-w-5xl mx-auto">
       {needsProfile && (
-        <CompleteProfileModal onComplete={(fullName) => setUser(u => ({ ...u, full_name: fullName }))} />
+        <CompleteProfileModal onComplete={(displayName) => setUser(u => ({ ...u, display_name: displayName }))} />
       )}
       {/* Header */}
       <motion.div {...fadeUp(0)} className="mb-8">
@@ -90,7 +90,7 @@ export default function Dashboard() {
           <div>
             <p className="text-sm text-muted-foreground mb-1">Welcome back,</p>
             <h1 className="font-playfair text-3xl font-bold text-foreground">
-              {user?.full_name || 'Buddy'} 👋
+              {user?.display_name || 'Buddy'} 👋
             </h1>
             {certification?.is_certified && (
               <div className="mt-3 inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary text-sm font-semibold px-4 py-1.5 rounded-full">

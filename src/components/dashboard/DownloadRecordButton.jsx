@@ -51,7 +51,7 @@ export default function DownloadRecordButton({ user, modules, progress, quizResu
       doc.text('Name:', margin, y);
       doc.setTextColor(...dark);
       doc.setFont('helvetica', 'bold');
-      doc.text(user?.full_name || '—', margin + 22, y);
+      doc.text(user?.display_name || user?.full_name || '—', margin + 22, y);
       y += 6;
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(...mid);
@@ -231,10 +231,11 @@ export default function DownloadRecordButton({ user, modules, progress, quizResu
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(32);
         doc.setTextColor(...goldD);
-        doc.text(user?.full_name || '', cx, 110, { align: 'center' });
+        const certName = user?.display_name || user?.full_name || '';
+        doc.text(certName, cx, 110, { align: 'center' });
 
         // Underline the name
-        const nameWidth = doc.getTextWidth(user?.full_name || '');
+        const nameWidth = doc.getTextWidth(certName);
         doc.setDrawColor(...goldM);
         doc.setLineWidth(0.7);
         doc.line(cx - nameWidth / 2, 113, cx + nameWidth / 2, 113);
@@ -294,7 +295,7 @@ export default function DownloadRecordButton({ user, modules, progress, quizResu
         doc.text(`Page ${i} of ${pageCount}`, W - margin, 290, { align: 'right' });
       }
 
-      const filename = `buddys-academy-record-${(user?.full_name || 'trainee').replace(/\s+/g, '-').toLowerCase()}.pdf`;
+      const filename = `buddys-academy-record-${(user?.display_name || user?.full_name || 'trainee').replace(/\s+/g, '-').toLowerCase()}.pdf`;
       doc.save(filename);
     } finally {
       setGenerating(false);

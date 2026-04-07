@@ -18,9 +18,9 @@ export default function CompleteProfileModal({ onComplete }) {
       return;
     }
     setSaving(true);
-    const fullName = `${firstName.trim()} ${lastName.trim()}`;
-    await base44.auth.updateMe({ full_name: fullName });
-    onComplete(fullName);
+    const displayName = `${firstName.trim()} ${lastName.trim()}`;
+    await base44.auth.updateMe({ display_name: displayName });
+    onComplete(displayName);
   };
 
   return (
@@ -31,7 +31,6 @@ export default function CompleteProfileModal({ onComplete }) {
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md p-8"
       >
-        {/* Icon */}
         <div className="w-14 h-14 bg-gold-pale rounded-2xl flex items-center justify-center mx-auto mb-5">
           <User className="w-7 h-7 text-primary" />
         </div>
@@ -40,7 +39,7 @@ export default function CompleteProfileModal({ onComplete }) {
           Welcome to Buddys Academy!
         </h2>
         <p className="text-sm text-muted-foreground text-center mb-6">
-          Please enter your full name — this will appear on your certificate once you complete the programme.
+          Please enter your name — this will appear on your certificate once you complete the programme.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
