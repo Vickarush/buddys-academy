@@ -126,7 +126,7 @@ export default function QuizSection({ moduleId, moduleName, passMark, user, onPa
               </Button>
             )}
             {passed && (
-              <p className="text-sm text-muted-foreground">Redirecting you back to your training...</p>
+              <p className="text-sm text-muted-foreground">Redirecting you to the next module...</p>
             )}
           </motion.div>
         ) : (

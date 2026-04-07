@@ -13,6 +13,7 @@ export default function ModuleViewer() {
   const { moduleId } = useParams();
   const navigate = useNavigate();
   const [module, setModule] = useState(null);
+  const [allModules, setAllModules] = useState([]);
   const [lessons, setLessons] = useState([]);
   const [currentLessonIdx, setCurrentLessonIdx] = useState(0);
   const [completedLessons, setCompletedLessons] = useState([]);
@@ -27,13 +28,15 @@ export default function ModuleViewer() {
       try {
         const u = await base44.auth.me();
         setUser(u);
-        const [mods, lessons, prog, results] = await Promise.all([
+        const [mods, allMods, lessons, prog, results] = await Promise.all([
           base44.entities.TrainingModule.filter({ id: moduleId }),
+          base44.entities.TrainingModule.list('order', 50),
           base44.entities.ModuleLesson.filter({ module_id: moduleId }),
           base44.entities.TrainingProgress.filter({ user_email: u.email, module_id: moduleId }),
           base44.entities.QuizResult.filter({ user_email: u.email, module_id: moduleId }),
         ]);
         setModule(mods[0]);
+        setAllModules(allMods.filter(m => m.is_published).sort((a, b) => a.order - b.order));
         setLessons(lessons.sort((a, b) => a.order - b.order));
         if (prog[0]) {
           setProgress(prog[0]);
@@ -87,6 +90,15 @@ export default function ModuleViewer() {
       setProgress(created);
     }
     setShowQuiz(false);
+
+    // Navigate to next module if one exists
+    const currentIdx = allModules.findIndex(m => m.id === moduleId);
+    const nextModule = allModules[currentIdx + 1];
+    if (nextModule && nextModule.order !== FINAL_ASSESSMENT_ORDER) {
+      setTimeout(() => navigate(`/training/${nextModule.id}`), 1500);
+    } else {
+      setTimeout(() => navigate('/training'), 1500);
+    }
   };
 
   const handleNext = () => {
